@@ -1,0 +1,15 @@
+{application, pcep_codec,
+ [{description, "A simple OTP library to encode and decode the PCEP protocol"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib,
+    codec_sequencer
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
