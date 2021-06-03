@@ -142,13 +142,13 @@
                     codec(required, metric)                            % RFC5440
                 )),
                 codec(optional, iro, #pcep_comprep.iro),               % RFC5440
-                % codec(optional, inter_layer,           
+                % codec(optional, inter_layer,
                 %   #pcep_comprep.inter_layer),                          % RFC8282
-                % codec(optional, switch_layer,          
+                % codec(optional, switch_layer,
                 %   #pcep_comprep.switch_layer),                         % RFC8282
-                % codec(optional, req_adap_cap,          
+                % codec(optional, req_adap_cap,
                 %   #pcep_comprep.req_adap_cap),                         % RFC8282
-                % codec(optional, server_indication,     
+                % codec(optional, server_indication,
                 %   #pcep_comprep.server_indication),                    % RFC8282
                 list(optional, #pcep_comprep.endpoints, loop(
                     record(required, #pcep_endpoint{}, [
@@ -208,13 +208,13 @@
 % https://tools.ietf.org/html/rfc8231#section-6.3
 -define(PCEP_MSG_ERROR_SPEC,
     record(required, #pcep_msg_error{}, [
-        list(required, #pcep_msg_error.error_list, loop(            
+        list(required, #pcep_msg_error.error_list, loop(
             record(required, #pcep_error{}, [
                 option(optional, [
-                    list(optional, #pcep_error.id_list, loop(                        
+                    list(optional, #pcep_error.id_list, loop(
                         codec(required, rp)                            % RFC5440
                     )),
-                    list(optional, #pcep_error.id_list, loop(                        
+                    list(optional, #pcep_error.id_list, loop(
                         codec(required, srp)                           % RFC8231
                     ))
                 ]),
@@ -243,7 +243,7 @@
                 codec(optional, srp, #pcep_report.srp),                 % RFC8231
                 codec(required, lsp, #pcep_report.lsp),                 % RFC8231
                 % list(optional, #pcep_report.associations, loop(
-                %     codec(required, association),                      % RFC8697 
+                %     codec(required, association),                      % RFC8697
                 % )),
                 codec(required, ero, #pcep_report.ero),                % RFC8231
                 group([
@@ -275,7 +275,7 @@
                 codec(required, lsp, #pcep_update.lsp),                % RFC8231
                 codec(required, ero, #pcep_update.ero),                % RFC8231
                 % list(optional, #pcep_update.associations, loop(
-                %     codec(required, association),                      % RFC8697 
+                %     codec(required, association),                      % RFC8697
                 % )),
                 codec(optional, bandwidth, #pcep_update.bandwidth),    % RFC8231
                 list(optional, #pcep_update.metrics, loop(
@@ -298,7 +298,7 @@
                     codec(optional, endpoint, #pcep_lsp_init.endpoint),% RFC8281
                     codec(required, ero, #pcep_lsp_init.ero),          % RFC8281
                     % list(optional, #pcep_initiate.associations, loop(
-                    %     codec(required, association),                  % RFC8697 
+                    %     codec(required, association),                  % RFC8697
                     % )),
                     % list(optional, #pcep_initiate.objfuns, loop(
                     %     codec(required, objfun),                       % RFC5541

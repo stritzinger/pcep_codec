@@ -246,7 +246,7 @@ int_nopath_nature(_Other) -> undefined.
 pcep_nopath_nature(path_not_found) -> ?PCEP_NOPATH_NI_PATH_NOT_FOUND;
 pcep_nopath_nature(pce_chain_broken) -> ?PCEP_NOPATH_NI_PCE_CHAIN_BROKEN.
 
--spec int_metric_type(non_neg_integer()) -> pcep_metric_type() | undefined.
+-spec int_metric_type(non_neg_integer()) -> te_metric_type() | undefined.
 int_metric_type(?PCEP_METRIC_IGP) -> igp;
 int_metric_type(?PCEP_METRIC_TE) -> te;
 int_metric_type(?PCEP_METRIC_HOP_COUNT) -> hop_count;
@@ -257,7 +257,7 @@ int_metric_type(?PCEP_METRIC_CUMULATIVE_TE) -> cumulative_te;
 int_metric_type(?PCEP_METRIC_SEGMENT_ID_DEPTH) -> segment_id_depth;
 int_metric_type(_Other) -> undefined.
 
--spec pcep_metric_type(pcep_metric_type()) -> non_neg_integer().
+-spec pcep_metric_type(te_metric_type()) -> non_neg_integer().
 pcep_metric_type(igp) -> ?PCEP_METRIC_IGP;
 pcep_metric_type(te) -> ?PCEP_METRIC_TE;
 pcep_metric_type(hop_count) -> ?PCEP_METRIC_HOP_COUNT;
@@ -1217,7 +1217,7 @@ int_pst(_Other) -> undefined.
 pcep_pst(rsvpte) -> ?PCEP_PST_RSVPTE;
 pcep_pst(srte) -> ?PCEP_PST_SRTE.
 
--spec int_nai_type(non_neg_integer()) -> pcep_nai_type() | undefined.
+-spec int_nai_type(non_neg_integer()) -> srte_nai_type() | undefined.
 int_nai_type(?PCEP_SR_SUBOBJ_NAI_ABSENT) ->
     absent;
 int_nai_type(?PCEP_SR_SUBOBJ_NAI_IPV4_NODE) ->
@@ -1235,7 +1235,7 @@ int_nai_type(?PCEP_SR_SUBOBJ_NAI_LINKLOCAL_IPV6_ADJACENCY) ->
 int_nai_type(_Other) ->
     undefined.
 
--spec pcep_nai_type(pcep_nai_type()) -> non_neg_integer().
+-spec pcep_nai_type(srte_nai_type()) -> non_neg_integer().
 pcep_nai_type(absent) ->
     ?PCEP_SR_SUBOBJ_NAI_ABSENT;
 pcep_nai_type(ipv4_node) ->
@@ -1251,7 +1251,7 @@ pcep_nai_type(unumbered_ipv4_adjacency) ->
 pcep_nai_type(linklocal_ipv6_adjacency) ->
     ?PCEP_SR_SUBOBJ_NAI_LINKLOCAL_IPV6_ADJACENCY.
 
--spec int_opstatus(non_neg_integer()) -> pcep_opstatus() | undefined.
+-spec int_opstatus(non_neg_integer()) -> te_opstatus() | undefined.
 int_opstatus(?PCEP_OPSTATUS_DOWN) -> down;
 int_opstatus(?PCEP_OPSTATUS_UP) -> up;
 int_opstatus(?PCEP_OPSTATUS_ACTIVE) -> active;
@@ -1259,7 +1259,7 @@ int_opstatus(?PCEP_OPSTATUS_GOING_DOWN) -> going_down;
 int_opstatus(?PCEP_OPSTATUS_GOING_UP) -> going_up;
 int_opstatus(_Other) -> undefined.
 
--spec pcep_opstatus(pcep_opstatus()) -> non_neg_integer().
+-spec pcep_opstatus(te_opstatus()) -> non_neg_integer().
 pcep_opstatus(down) -> ?PCEP_OPSTATUS_DOWN;
 pcep_opstatus(up) -> ?PCEP_OPSTATUS_UP;
 pcep_opstatus(active) -> ?PCEP_OPSTATUS_ACTIVE;

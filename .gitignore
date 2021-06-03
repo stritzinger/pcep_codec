@@ -1,4 +1,5 @@
 .rebar3
+erlang_ls.config
 _*
 .eunit
 *.o

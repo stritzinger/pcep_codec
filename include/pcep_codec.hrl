@@ -1,13 +1,12 @@
 
+%%% INCLUDES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-include_lib("pcep_codec/include/pcep_codec_te.hrl").
+
+
 %%% TYPES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--type ip4_prefix() :: {inet:ip4_address(), 0..32}.
--type ip6_prefix() :: {inet:ip6_address(), 0..128}.
-
 -type pcep_nopath_nature() :: path_not_found | pce_chain_broken.
--type pcep_metric_type() :: igp | te | hop_count | aggregate_bw
-                          | most_loaded_link | cumulative_igp | cumulative_te
-                          | segment_id_depth.
 
 -type pcep_notif_type() :: req_canceled
                          | pce_congestion
@@ -144,62 +143,8 @@
 
 -type pcep_pst() :: rsvpte | srte.
 
--type pcep_nai_type() :: absent
-                       | ipv4_node
-                       | ipv6_node
-                       | ipv4_adjacency
-                       | ipv6_adjacency
-                       | unumbered_ipv4_adjacency
-                       | linklocal_ipv6_adjacency.
-
--type pcep_sid() :: non_neg_integer().
-
--type pcep_opstatus() :: down
-                       | up
-                       | active
-                       | going_down
-                       | going_up.
-
 
 %%% RECORDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
--record(mpls_stack_entry, {
-    label = 0 :: 0..1048575,
-    tc  = 0 :: 0..7,
-    is_last = false :: boolean(),
-    ttl = 0 :: 0..255
-}).
-
--type mpls_stack_entry() :: #mpls_stack_entry{}.
-
--record(sr_nai_node, {
-    address :: inet:ip_address()
-}).
-
--record(sr_nai_adjacency, {
-    local_address :: inet:ip_address(),
-    remote_address :: inet:ip_address()
-}).
-
--record(sr_nai_unumbered_ipv4_adjacency, {
-    local_node_id :: non_neg_integer(),
-    local_interface_id :: non_neg_integer(),
-    remote_node_id :: non_neg_integer(),
-    remote_interface_id :: non_neg_integer()
-}).
-
--record(sr_nai_linklocal_ipv6_adjacency, {
-    local_address :: inet:ip6_address(),
-    local_interface_id :: non_neg_integer(),
-    remote_address :: inet:ip6_address(),
-    remote_interface_id :: non_neg_integer()
-}).
-
--type pcep_nai() :: #sr_nai_node{}
-                  | #sr_nai_adjacency{}
-                  | #sr_nai_unumbered_ipv4_adjacency{}
-                  | #sr_nai_linklocal_ipv6_adjacency{}.
-
 
 %-- PCEP SUB-TLVS --------------------------------------------------------------
 
@@ -343,13 +288,13 @@
     flag_l = false :: boolean(),
     has_sid = false :: boolean(),
     has_nai = false :: boolean(),
-    nai_type = absent :: pcep_nai_type(),
+    nai_type = absent :: srte_nai_type(),
     is_mpls = false :: boolean(),
     % If is_mpls is true, this tells if the ttl,
     % is_last and tc are defined by the PCE
     has_mpls_extra = false :: boolean(),
-    sid :: pcep_sid() | mpls_stack_entry() | undefined,
-    nai :: pcep_nai() | undefined
+    sid :: srte_sid() | mpls_stack_entry() | undefined,
+    nai :: srte_nai() | undefined
 }).
 
 -type pcep_ro_subobj() :: #pcep_ro_subobj_ipv4{}
@@ -436,7 +381,7 @@
     flag_i = false :: boolean(),
     flag_c = false :: boolean(),
     flag_b = false :: boolean(),
-    type = igp :: pcep_metric_type(),
+    type = igp :: te_metric_type(),
     value = 0.0 ::float()
 }).
 -type pcep_obj_metric() :: #pcep_obj_metric{}.
@@ -520,6 +465,7 @@
 }).
 -type pcep_obj_objfun() :: #pcep_obj_objfun{}.
 
+% https://datatracker.ietf.org/doc/html/rfc8231#section-7.3
 -record(pcep_obj_lsp, {
     flag_p = false :: boolean(),
     flag_i = false :: boolean(),
@@ -529,7 +475,7 @@
     flag_a = false :: boolean(),
     flag_c = false :: boolean(),
     plsp_id = 0 :: non_neg_integer(),
-    status = down :: pcep_opstatus(),
+    status = down :: te_opstatus(),
     tlvs = [] :: [pcep_tlv()]
 }).
 -type pcep_obj_lsp() :: #pcep_obj_lsp{}.

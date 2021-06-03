@@ -482,13 +482,20 @@ decode_sr_ro_sid(Ctx, Rec, 1, _, _, Rem) ->
     {ok, Rec, Rem, Ctx};
 decode_sr_ro_sid(Ctx, Rec, 0, 0, _, <<SID:32, Rem/binary>>) ->
     {ok, Rec#pcep_ro_subobj_sr{has_sid = true, sid = SID}, Rem, Ctx};
-decode_sr_ro_sid(Ctx, Rec, 0, 1, HasExtra,
+decode_sr_ro_sid(Ctx, Rec, 0, 1, 0, <<L:20, _:12, Rem/binary>>) ->
+    {ok, Rec#pcep_ro_subobj_sr{
+        has_sid = true,
+        is_mpls = true,
+        has_mpls_extra = false,
+        sid = #mpls_stack_entry{label = L}
+    }, Rem, Ctx};
+decode_sr_ro_sid(Ctx, Rec, 0, 1, 1,
                  <<L:20, TC:3, S:1, TTL:8, Rem/binary>>) ->
     {ok, Rec#pcep_ro_subobj_sr{
         has_sid = true,
         is_mpls = true,
-        has_mpls_extra = bit2bool(HasExtra),
-        sid = #mpls_stack_entry{
+        has_mpls_extra = true,
+        sid = #mpls_stack_entry_ext{
             label = L,
             tc = TC,
             is_last = bit2bool(S),
@@ -506,7 +513,7 @@ decode_sr_ro_nai(Ctx, Rec, ipv4_node = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_node{
+        nai = #srte_nai_node{
             address = {A1, A2, A3, A4}
         }
     }, Rem, Ctx};
@@ -516,7 +523,7 @@ decode_sr_ro_nai(Ctx, Rec, ipv6_node = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_node{
+        nai = #srte_nai_node{
             address = {A1, A2, A3, A4, A5, A6, A7, A8}
         }
     }, Rem, Ctx};
@@ -526,7 +533,7 @@ decode_sr_ro_nai(Ctx, Rec, ipv4_adjacency = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_adjacency{
+        nai = #srte_nai_adjacency{
             local_address = {L1, L2, L3, L4},
             remote_address = {R1, R2, R3, R4}
         }
@@ -539,7 +546,7 @@ decode_sr_ro_nai(Ctx, Rec, ipv6_adjacency = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_adjacency{
+        nai = #srte_nai_adjacency{
             local_address = {L1, L2, L3, L4, L5, L6, L7, L8},
             remote_address = {R1, R2, R3, R4, R5, R6, R7, R8}
         }
@@ -549,7 +556,7 @@ decode_sr_ro_nai(Ctx, Rec, unumbered_ipv4_adjacency = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_unumbered_ipv4_adjacency{
+        nai = #srte_nai_unumbered_ipv4_adjacency{
             local_node_id = LNId,
             local_interface_id = LIId,
             remote_node_id = RNId,
@@ -564,7 +571,7 @@ decode_sr_ro_nai(Ctx, Rec, linklocal_ipv6_adjacency = NAIType, 0,
     {ok, Rec#pcep_ro_subobj_sr{
         has_nai = true,
         nai_type = NAIType,
-        nai = #sr_nai_linklocal_ipv6_adjacency{
+        nai = #srte_nai_linklocal_ipv6_adjacency{
             local_address = {L1, L2, L3, L4, L5, L6, L7, L8},
             local_interface_id = LIId,
             remote_address = {R1, R2, R3, R4, R5, R6, R7, R8},
@@ -955,8 +962,11 @@ encode_ro_subobj(Ctx, #pcep_ro_subobj_sr{} = Obj) ->
 encode_sr_ro_sid(Ctx, #pcep_ro_subobj_sr{has_sid = false}) ->
     {ok, <<>>, 0, Ctx};
 encode_sr_ro_sid(Ctx, #pcep_ro_subobj_sr{is_mpls = true,
-                                         sid = #mpls_stack_entry{} = SID}) ->
-    #mpls_stack_entry{label = L, tc = TC, is_last = S, ttl = TTL} = SID,
+                        sid = #mpls_stack_entry{label = L}}) ->
+    {ok, <<L:20, 0:3, 0:1, 0:8>>, 4, Ctx};
+encode_sr_ro_sid(Ctx, #pcep_ro_subobj_sr{is_mpls = true,
+                        sid = #mpls_stack_entry_ext{} = SID}) ->
+    #mpls_stack_entry_ext{label = L, tc = TC, is_last = S, ttl = TTL} = SID,
     {ok, <<L:20, TC:3, (bool2bit(S)):1, TTL:8>>, 4, Ctx};
 encode_sr_ro_sid(Ctx, #pcep_ro_subobj_sr{sid = SID})
   when is_integer(SID) ->
@@ -968,24 +978,24 @@ encode_sr_ro_sid(Ctx, _Obj) ->
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{has_nai = false}) ->
     {ok, <<>>, 0, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = ipv4_node,
-                                         nai = #sr_nai_node{} = NAI}) ->
-    #sr_nai_node{address = Addr} = NAI,
+                                         nai = #srte_nai_node{} = NAI}) ->
+    #srte_nai_node{address = Addr} = NAI,
     {ok, addr4(Addr), 4, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = ipv6_node,
-                                         nai = #sr_nai_node{} = NAI}) ->
-    #sr_nai_node{address = Addr} = NAI,
+                                         nai = #srte_nai_node{} = NAI}) ->
+    #srte_nai_node{address = Addr} = NAI,
     {ok, addr6(Addr), 16, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = ipv4_adjacency,
-                                         nai = #sr_nai_adjacency{} = NAI}) ->
-    #sr_nai_adjacency{local_address = LAddr, remote_address = RAddr} = NAI,
+                                         nai = #srte_nai_adjacency{} = NAI}) ->
+    #srte_nai_adjacency{local_address = LAddr, remote_address = RAddr} = NAI,
     {ok, [addr4(LAddr), addr4(RAddr)], 8, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = ipv6_adjacency,
-                                         nai = #sr_nai_adjacency{} = NAI}) ->
-    #sr_nai_adjacency{local_address = LAddr, remote_address = RAddr} = NAI,
+                                         nai = #srte_nai_adjacency{} = NAI}) ->
+    #srte_nai_adjacency{local_address = LAddr, remote_address = RAddr} = NAI,
     {ok, [addr6(LAddr), addr6(RAddr)], 32, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = unumbered_ipv4_adjacency,
-                        nai = #sr_nai_unumbered_ipv4_adjacency{} = NAI}) ->
-    #sr_nai_unumbered_ipv4_adjacency{
+                        nai = #srte_nai_unumbered_ipv4_adjacency{} = NAI}) ->
+    #srte_nai_unumbered_ipv4_adjacency{
         local_node_id = LNId,
         local_interface_id =LIId,
         remote_node_id = RNId,
@@ -993,8 +1003,8 @@ encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = unumbered_ipv4_adjacency,
     } = NAI,
     {ok, <<LNId:32, LIId:32, RNId: 32, RIId:32>>, 16, Ctx};
 encode_sr_ro_nai(Ctx, #pcep_ro_subobj_sr{nai_type = linklocal_ipv6_adjacency,
-                        nai = #sr_nai_linklocal_ipv6_adjacency{} = NAI}) ->
-    #sr_nai_linklocal_ipv6_adjacency{
+                        nai = #srte_nai_linklocal_ipv6_adjacency{} = NAI}) ->
+    #srte_nai_linklocal_ipv6_adjacency{
         local_address = LAddr,
         local_interface_id = LIId,
         remote_address = RAddr,
