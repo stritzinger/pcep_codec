@@ -242,6 +242,9 @@
 -record(pcep_tlv_assoc_type_list, {
 
 }).
+-record(pcep_tlv_arbitrary, {
+    data = <<>> :: binary()
+}).
 
 -type pcep_tlv() :: #pcep_tlv_unknown{}
                   | #pcep_tlv_nopath_vector{}
@@ -263,7 +266,9 @@
                   | #pcep_tlv_global_assoc_source{}
                   | #pcep_tlv_ext_assoc_id{}
                   | #pcep_tlv_path_setup_type_cap{}
-                  | #pcep_tlv_assoc_type_list{}.
+                  | #pcep_tlv_assoc_type_list{}
+                  | #pcep_tlv_arbitrary{}.
+
 
 %-- RSVP/PCEP RO SUB-OBJECTS ---------------------------------------------------
 
@@ -483,6 +488,7 @@
 -record(pcep_obj_srp, {
     flag_p = false :: boolean(),
     flag_i = false :: boolean(),
+    flag_r = false :: boolean(),
     srp_id = 0 :: non_neg_integer(),
     tlvs = [] :: [pcep_tlv()]
 }).

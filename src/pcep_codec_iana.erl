@@ -306,6 +306,8 @@ int_tlv_type(?PCEP_TLV_GLOBAL_ASSOC_SOURCE) -> global_assoc_source;
 int_tlv_type(?PCEP_TLV_EXT_ASSOC_ID) -> ext_assoc_id;
 int_tlv_type(?PCEP_TLV_PATH_SETUP_TYPE_CAP) -> path_setup_type_cap;
 int_tlv_type(?PCEP_TLV_ASSOC_TYPE_LIST) -> assoc_type_list;
+int_tlv_type(?PCEP_TLV_CISCO_BINDING_LABEL) -> cisco_binding_label;
+int_tlv_type(?PCEP_TLV_ARBITRARY) -> arbitrary;
 int_tlv_type(_TlvTypeId) -> undefined.
 
 -spec pcep_tlv_type(pcep_tlv_type()) -> non_neg_integer().
@@ -328,7 +330,9 @@ pcep_tlv_type(assoc_range) -> ?PCEP_TLV_OP_CONFIGURED_ASSOC_RANGE;
 pcep_tlv_type(global_assoc_source) -> ?PCEP_TLV_GLOBAL_ASSOC_SOURCE;
 pcep_tlv_type(ext_assoc_id) -> ?PCEP_TLV_EXT_ASSOC_ID;
 pcep_tlv_type(path_setup_type_cap) -> ?PCEP_TLV_PATH_SETUP_TYPE_CAP;
-pcep_tlv_type(assoc_type_list) -> ?PCEP_TLV_ASSOC_TYPE_LIST.
+pcep_tlv_type(assoc_type_list) -> ?PCEP_TLV_ASSOC_TYPE_LIST;
+pcep_tlv_type(cisco_binding_label) -> ?PCEP_TLV_CISCO_BINDING_LABEL;
+pcep_tlv_type(arbitrary) -> ?PCEP_TLV_ARBITRARY.
 
 -spec int_sub_tlv_type(pcep_tlv_type(), non_neg_integer())
     -> pcep_sub_tlv_type() | undefined.

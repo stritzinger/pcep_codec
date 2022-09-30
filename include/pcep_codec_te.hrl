@@ -27,15 +27,17 @@
 
 -type srte_sid() :: non_neg_integer().
 
+-type srte_label() :: 0..1048575.
+
 
 %%% RECORDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -record(mpls_stack_entry, {
-    label = 0 :: 0..1048575
+    label = 0 :: srte_label()
 }).
 
 -record(mpls_stack_entry_ext, {
-    label = 0 :: 0..1048575,
+    label = 0 :: srte_label(),
     tc  = 0 :: 0..7,
     is_last = false :: boolean(),
     ttl = 0 :: 0..255
@@ -70,5 +72,10 @@
                   | #srte_nai_adjacency{}
                   | #srte_nai_unumbered_ipv4_adjacency{}
                   | #srte_nai_linklocal_ipv6_adjacency{}.
+
+-record(pcep_tlv_cisco_binding_label, {
+    label = 0 :: 0..1048575
+}).
+
 
 -endif. % PCEP_CODEC_TE_INCLUDED

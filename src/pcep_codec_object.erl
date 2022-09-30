@@ -336,11 +336,13 @@ decode_object(Ctx, close, Header, <<_:16, _:8, R:8, Rem/binary>>) ->
             })
     end;
 % https://tools.ietf.org/html/rfc8231#section-7.2
-decode_object(Ctx, srp, Header, <<_:32, ID:32, Rem/binary>>) ->
+% https://www.rfc-editor.org/rfc/rfc8281.html#section-5.2
+decode_object(Ctx, srp, Header, <<_:31, R:1, ID:32, Rem/binary>>) ->
     #{flag_p := P, flag_i := I} = Header,
     decode_tlvs(Ctx, Rem, #pcep_obj_srp.tlvs, #pcep_obj_srp{
         flag_p = P,
         flag_i = I,
+        flag_r = bit2bool(R),
         srp_id = ID
     });
 % https://tools.ietf.org/html/rfc8231#section-7.3
@@ -832,14 +834,16 @@ encode_object(Ctx, #pcep_obj_close{} = Obj) ->
     Body = <<0:16, 0:8, R:8>>,
     {ok, P, I, Body, 4, TLVs, Ctx};
 % https://tools.ietf.org/html/rfc8231#section-7.2
+% https://www.rfc-editor.org/rfc/rfc8281.html#section-5.2
 encode_object(Ctx, #pcep_obj_srp{} = Obj) ->
     #pcep_obj_srp{
         flag_p = P,
         flag_i = I,
+        flag_r = R,
         srp_id = ID,
         tlvs = TLVs
     } = Obj,
-    Body = <<0:32, ID:32>>,
+    Body = <<0:31, (bool2bit(R)):1, ID:32>>,
     {ok, P, I, Body, 8, TLVs, Ctx};
 % https://tools.ietf.org/html/rfc8231#section-7.3
 % https://tools.ietf.org/html/rfc8281#section-8.2

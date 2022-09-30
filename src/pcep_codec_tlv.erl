@@ -181,6 +181,13 @@ decode_tlv(Ctx, path_setup_type_cap,
 %TODO: Implemente TLV assoc_type_list
 decode_tlv(Ctx, assoc_type_list, _) ->
     ?NOT_IMPLEMENTED(Ctx);
+% Custom CISCO TLV for binding label
+decode_tlv(Ctx, cisco_binding_label, <<_:16, L:32>>) ->
+    {ok, #pcep_tlv_cisco_binding_label{label = L bsr 12}, Ctx};
+% Arbitrary TLV
+decode_tlv(Ctx, arbitrary, Data) ->
+    %TODO: check maximum data size ?
+    {ok, #pcep_tlv_arbitrary{data = Data}, Ctx};
 decode_tlv(Ctx, _Type, _Data) ->
     pcep_codec_error:malformed_tlv(Ctx).
 
@@ -377,6 +384,14 @@ encode_tlv(Ctx, #pcep_tlv_assoc_type_list{}) ->
 encode_tlv(Ctx, #pcep_tlv_unknown{type = T, data = D}) ->
     Ctx2 = pcep_codec_context:begin_tlv(Ctx, unknown_tlv),
     {ok, T, D, byte_size(D), Ctx2};
+% Custom CISCO TLV for binding label
+encode_tlv(Ctx, #pcep_tlv_cisco_binding_label{label = L}) ->
+    Ctx2 = pcep_codec_context:begin_tlv(Ctx, cisco_binding_label),
+    {ok, cisco_binding_label, <<0:16, (L bsl 12):32>>, 6, Ctx2};
+% Arbitrary data TLV
+encode_tlv(Ctx, #pcep_tlv_arbitrary{data = Data}) ->
+    Ctx2 = pcep_codec_context:begin_tlv(Ctx, arbitrary),
+    {ok, arbitrary, Data, byte_size(Data), Ctx2};
 % Unsupported TLV record
 encode_tlv(Ctx, Other) ->
     {error, {unsupported_tlv, Other}, Ctx}.

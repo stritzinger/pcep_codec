@@ -144,6 +144,10 @@
 -define(PCEP_TLV_PATH_SETUP_TYPE_CAP, 34).       % RFC8408
 % ASSOC-Type-List
 -define(PCEP_TLV_ASSOC_TYPE_LIST, 35).           % RFC8697
+% Custom CISCO TLV to bind a label
+-define(PCEP_TLV_CISCO_BINDING_LABEL, 65505).
+% Arbirtrary TLV
+-define(PCEP_TLV_ARBITRARY, 65533).
 
 
 %-- PCEP Setup Type TLV's Sub-TLVs IANA Numbers --------------------------------
