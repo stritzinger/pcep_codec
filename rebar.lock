@@ -1,4 +1,4 @@
 [{<<"codec_sequencer">>,
-  {git,"git@github.com:stritzinger/codec_sequencer.git",
+  {git,"https://github.com/stritzinger/codec_sequencer.git",
        {ref,"fc8760894f7962ef1497bf6ce4247eb75db9d5ca"}},
   0}].
